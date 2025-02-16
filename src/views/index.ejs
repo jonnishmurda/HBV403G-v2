@@ -1,9 +1,19 @@
 <%- include('header') -%>
 
-<ul>
-  <% for (const category of categories) { %>
-    <li><a href="/spurningar/<%=category.id%>"><%=category.name%></a></li>
-  <% } %>
-</ul>
+  <div class="categories">
+    <% if (categories.length> 0) { %>
+      <% categories.forEach(category=> { %>
+        <div class="category-card">
+          <h2><a href="/spurningar/<%= category.name %>">
+              <%= category.name %>
+            </a></h2>
+        </div>
+        <% }) %>
+          <% } else { %>
+            <p>No categories available.</p>
+            <% } %>
+  </div>
 
-<%- include('footer') -%>
+
+
+  <%- include('footer') -%>

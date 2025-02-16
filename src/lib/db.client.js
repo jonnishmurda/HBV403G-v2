@@ -9,7 +9,7 @@ export class Database {
   /**
    * Create a new database connection.
    * @param {string} connectionString
-   * @param {import('./logger.js/index.js').Logger} logger
+   * @param {import('./logger').Logger} logger
    */
   constructor(connectionString, logger) {
     this.connectionString = connectionString;
