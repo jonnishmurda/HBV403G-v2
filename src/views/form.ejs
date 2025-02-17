@@ -1,21 +1,110 @@
 <%- include('header') -%>
 
-<form method="post" action="/form">
+  <h2>Búa til nýjan spurningalista</h2>
 
-  <label for="name">Heiti flokks:</label>
-  <input type="text" id="name" name="name">
-  <input type="number" id="name" name="number">
-  <label>rétt svar #1: <input type="radio" id="name" name="rett_svar" value="1"></label>
-  <label>rétt svar #2: <input type="radio" id="name" name="rett_svar" value="1"></label>
-  <label>rétt svar #3: <input type="radio" id="name" name="rett_svar" value="1"></label>
+  <form id="quizForm" method="post" action="/form">
+    <div class="form-group">
+      <label for="title">Titill flokks:</label>
+      <input type="text" id="title" name="title" required>
+    </div>
 
-  <input type="checkbox" id="name" name="checkbox">
-  <select>
-    <option>foo</option>
-    <option value="foobar">bar</option>
-  </select>
-  <textarea name="text"></textarea>
-  <button type="submit">Búa til flokk</button>
-</form>
+    <h3>Spurningar</h3>
+    <div id="questions-container"></div>
 
-<%- include('footer') -%>
+    <button type="button" id="addQuestion">Bæta við spurningu</button>
+    <button type="submit">Vista spurningalista</button>
+  </form>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const questionsContainer = document.getElementById("questions-container");
+      const addQuestionButton = document.getElementById("addQuestion");
+
+      let questionCount = 0;
+
+      function addQuestion() {
+        questionCount++;
+        const questionDiv = document.createElement("div");
+        questionDiv.classList.add("question-block");
+        questionDiv.dataset.index = questionCount;
+
+        questionDiv.innerHTML = `
+            <hr>
+            <div class="form-group">
+                <label for="question-${questionCount}">Spurning:</label>
+                <input type="text" id="question-${questionCount}" name="questions[${questionCount}][question]" required>
+            </div>
+            <div class="answers-container" id="answers-container-${questionCount}">
+                <h4>Svör</h4>
+            </div>
+            <button type="button" class="addAnswer" data-question="${questionCount}">Bæta við svari</button>
+        `;
+
+        questionsContainer.appendChild(questionDiv);
+
+        addAnswer(questionCount);
+        addAnswer(questionCount);
+      }
+
+      function addAnswer(questionIndex) {
+        const answersContainer = document.getElementById(`answers-container-${questionIndex}`);
+        const answerCount = answersContainer.querySelectorAll(".answer-block").length;
+
+        if (answerCount >= 4) {
+          alert("Þú getur haft að mesta lagi 4 svör");
+          return;
+        }
+
+        const answerDiv = document.createElement("div");
+        answerDiv.classList.add("answer-block");
+
+        answerDiv.innerHTML = `
+            <div class="form-group">
+                <label for="answer-${questionIndex}-${answerCount}">Svar:</label>
+                <input type="text" id="answer-${questionIndex}-${answerCount}" name="questions[${questionIndex}][answers][${answerCount}][answer]" required>
+                <label for="correct-${questionIndex}-${answerCount}">
+                    Rétt svar: <input type="checkbox" id="correct-${questionIndex}-${answerCount}" name="questions[${questionIndex}][answers][${answerCount}][correct]" value="true">
+                </label>
+                <button type="button" class="removeAnswer">❌</button>
+            </div>
+        `;
+
+        answersContainer.appendChild(answerDiv);
+      }
+
+      addQuestionButton.addEventListener("click", addQuestion);
+
+      document.addEventListener("click", function (event) {
+        if (event.target.classList.contains("addAnswer")) {
+          const questionIndex = event.target.dataset.question;
+          addAnswer(questionIndex);
+        }
+
+        if (event.target.classList.contains("removeAnswer")) {
+          const answerBlock = event.target.closest(".answer-block");
+          const answersContainer = answerBlock.parentElement;
+
+          if (answersContainer.querySelectorAll(".answer-block").length <= 2) {
+            alert("Þú verður að hafa að minnsta kosti 2 svör.");
+            return;
+          }
+
+          answerBlock.remove();
+        }
+      });
+
+      document.getElementById("quizForm").addEventListener("submit", function (event) {
+        const questions = document.querySelectorAll(".question-block");
+
+        for (const question of questions) {
+          const checkboxes = question.querySelectorAll("input[type='checkbox']:checked");
+          if (checkboxes.length === 0) {
+            event.preventDefault();
+            alert("Spurningar verða að hafa að minnsta kosti eitt rétt svar.");
+            return;
+          }
+        }
+      });
+    });
+  </script>
+  <%- include('footer') -%>

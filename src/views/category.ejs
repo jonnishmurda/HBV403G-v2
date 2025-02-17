@@ -1,24 +1,29 @@
 <%- include('header') -%>
 
-<h1><%= title %> spurningar</h1>
-
-<section class="quiz">
-  <% for (const question of questions) { %>
-    <% if (question.question && Array.isArray(question.answers)) { %>
-      <h3><%= question.question %></h3>
-      <ul>
-        <% for (const answer of question.answers) { %>
-          <% if (typeof answer.answer === "string") { %>
-            <li>
-              <button class="answer" data-correct="<%= answer.correct %>">
-                <%= answer.answer %>
-              </button>
-            </li>
+  <div class="content">
+    <h1>
+      <%= title %> spurningar
+    </h1>
+    <section class="quiz">
+      <% for (const question of questions) { %>
+        <% if (question.question && Array.isArray(question.answers)) { %>
+          <h3>
+            <%= question.question %>
+          </h3>
+          <ul>
+            <% for (const answer of question.answers) { %>
+              <% if (typeof answer.answer==="string" ) { %>
+                <li>
+                  <button class="answer" data-correct="<%= answer.correct %>">
+                    <%= answer.answer %>
+                  </button>
+                </li>
+                <% } %>
+                  <% } %>
+          </ul>
           <% } %>
-        <% } %>
-      </ul>
-    <% } %>
-  <% } %>
-</section>
+            <% } %>
+    </section>
+  </div>
 
-<%- include('footer') -%>
+  <%- include('footer') -%>

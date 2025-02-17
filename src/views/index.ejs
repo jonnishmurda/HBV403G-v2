@@ -1,9 +1,10 @@
 <%- include('header') -%>
 
 <div class="categories">
+  <h1>Veldu spurningaflokk að neðan</h1>
   <% if (categories.length > 0) { %>
     <% categories.forEach(category => { %>
-      <div class="category-card">
+      <div class="category">
         <h2>
           <a href="/spurningar/<%= category.name.toLowerCase().replace(/\s+/g, '') %>">
             <%= category.name %>

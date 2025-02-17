@@ -47,29 +47,64 @@ router.get('/form', (req, res) => {
 });
 
 router.post('/form', async (req, res) => {
-    const { name } = req.body;
+    try {
+        const { title, questions } = req.body;
 
-    console.log(name);
+        if (!title || !questions || Object.keys(questions).length === 0) {
+            throw new Error("Titill og að minnsta kosti ein spurning eru nauðsynleg.");
+        }
 
-    // Hér þarf að setja upp validation, hvað ef name er tómt? hvað ef það er allt handritið að BEE MOVIE?
-    // Hvað ef það er SQL INJECTION? HVAÐ EF ÞAÐ ER EITTHVAÐ ANNAÐ HRÆÐILEGT?!?!?!?!?!
-    // TODO VALIDATION OG HUGA AÐ ÖRYGGI
+        const db = getDatabase();
+        if (!db) {
+            return res.status(500).send("Database connection failed.");
+        }
 
-    // Ef validation klikkar, senda skilaboð um það á notanda
+        // Insert category
+        const categoryResult = await db.query(
+            'INSERT INTO categories (name) VALUES ($1) RETURNING id',
+            [title]
+        );
 
-    // Ef allt OK, búa til í gagnagrunn.
-    const env = environment(process.env, logger);
-    if (!env) {
-        process.exit(1);
+        if (!categoryResult || !categoryResult.rows || categoryResult.rows.length === 0) {
+            throw new Error("Failed to insert category into the database.");
+        }
+
+        const categoryId = categoryResult.rows[0].id;
+
+        // Insert questions
+        for (const qKey in questions) {
+            const question = questions[qKey];
+
+            const questionResult = await db.query(
+                'INSERT INTO questions (category_id, question) VALUES ($1, $2) RETURNING id',
+                [categoryId, question.question]
+            );
+
+            if (!questionResult || !questionResult.rows || questionResult.rows.length === 0) {
+                throw new Error(`Failed to insert question: ${question.question}`);
+            }
+
+            const questionId = questionResult.rows[0].id;
+
+            // Insert answers
+            if (!question.answers || Object.keys(question.answers).length < 2) {
+                throw new Error(`Spurning '${question.question}' þarf að hafa að minnsta kosti 2 svör.`);
+            }
+
+            for (const aKey in question.answers) {
+                const answer = question.answers[aKey];
+
+                await db.query(
+                    'INSERT INTO answers (question_id, answer, correct) VALUES ($1, $2, $3)',
+                    [questionId, answer.answer, answer.correct === "true"]
+                );
+            }
+        }
+
+        res.render('form-created', { title: 'Flokkur búinn til' });
+
+    } catch (error) {
+        console.error("🚨 Error inserting quiz data:", error);
+        res.status(400).send(error.message);
     }
-
-    const db = getDatabase();
-
-    const result = await db?.query('INSERT INTO categories (name) VALUES ($1)', [
-        name,
-    ]);
-
-    console.log(result);
-
-    res.render('form-created', { title: 'Flokkur búinn til' });
 });
