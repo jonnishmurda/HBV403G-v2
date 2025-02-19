@@ -55,7 +55,7 @@ header {
 
             & a:hover::before {
                 width: 100%;
-                transition: 0.3s;
+                transition: 0.3s ease-out;
             }
 
         }
@@ -104,7 +104,7 @@ header {
 
         & a:hover::before {
             width: 100%;
-            transition: 0.3s;
+            transition: 0.3s ease-out;
         }
 
     }
@@ -162,7 +162,7 @@ header {
             & button:active {
                 scale: 1;
                 box-shadow: none;
-            }
+            }            
         }
     }
 }
