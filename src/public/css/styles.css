@@ -32,33 +32,49 @@ header {
         display: flex;
         flex-wrap: wrap;
         flex-direction: row;
-        gap: 8px;
+        gap: 1rem;
 
         & li {
             list-style-type: none;
-
+        
             & a {
                 position: relative;
                 text-decoration: none;
                 color: var(--color-white);
+        
+                &::before {
+                    position: absolute;
+                    content: '';
+                    background: var(--color-white);
+                    bottom: 0;
+                    left: 0;
+                    height: 2px;
+                    width: 0;
+                    transition: width 0.3s ease-out;
+                }
+        
+                &:hover::before {
+                    width: 100%;
+                }
             }
+        
+            &:last-child a {
+                border: solid 2px var(--color-white);
+                border-radius: 20px;
+                padding: 0.25rem 1rem;
+        
+                &::before {
+                    content: none;
+                }
 
-            & a::before {
-                position: absolute;
-                content: '';
-                background: var(--color-white);
-                bottom: 0;
-                left: 0;
-                height: 2px;
-                width: 0;
+                &:hover {
+                    background: var(--color-white);
+                    color: var(--color-main);
+                    transition: 0.3s;
+                }
             }
-
-            & a:hover::before {
-                width: 100%;
-                transition: 0.3s ease-out;
-            }
-
         }
+        
     }
 }
 
