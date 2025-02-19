@@ -1,20 +1,20 @@
 <%- include('header') -%>
 
-  <h2>Búa til nýjan spurningalista</h2>
+  <section class="quizForm">
+    <h2>Búa til nýjan spurningalista</h2>
+    <form id="quizForm" method="post" action="/form">
+      <div class="form-group">
+        <label class="questionTitle" for="title">Titill flokks:</label>
+        <input type="text" id="title" name="title" required placeholder="Titill">
+      </div>
 
-  <form id="quizForm" method="post" action="/form">
-    <div class="form-group">
-      <label for="title">Titill flokks:</label>
-      <input type="text" id="title" name="title" required>
-    </div>
+      <h4>Spurningar</h4>
+      <div id="questions-container" class="container"></div>
 
-    <h3>Spurningar</h3>
-    <div id="questions-container"></div>
-
-    <button type="button" id="addQuestion">Bæta við spurningu</button>
-    <button type="submit">Vista spurningalista</button>
-  </form>
-
+      <button type="button" id="addQuestion" class="addAnswer">Bæta við spurningu</button>
+      <button type="submit" class="save">Vista spurningalista</button>
+    </form>
+  </section>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       const questionsContainer = document.getElementById("questions-container");
@@ -29,15 +29,16 @@
         questionDiv.dataset.index = questionCount;
 
         questionDiv.innerHTML = `
-            <hr>
+        <div class="border">
             <div class="form-group">
                 <label for="question-${questionCount}">Spurning:</label>
-                <input type="text" id="question-${questionCount}" name="questions[${questionCount}][question]" required>
+                <input type="text" id="question-${questionCount}" name="questions[${questionCount}][question]" required placeholder="Spurning">
             </div>
             <div class="answers-container" id="answers-container-${questionCount}">
                 <h4>Svör</h4>
             </div>
             <button type="button" class="addAnswer" data-question="${questionCount}">Bæta við svari</button>
+            </div>
         `;
 
         questionsContainer.appendChild(questionDiv);
@@ -59,14 +60,16 @@
         answerDiv.classList.add("answer-block");
 
         answerDiv.innerHTML = `
+        
             <div class="form-group">
                 <label for="answer-${questionIndex}-${answerCount}">Svar:</label>
-                <input type="text" id="answer-${questionIndex}-${answerCount}" name="questions[${questionIndex}][answers][${answerCount}][answer]" required>
+                <input type="text" id="answer-${questionIndex}-${answerCount}" name="questions[${questionIndex}][answers][${answerCount}][answer]" required placeholder="Svar við spurningu">
                 <label for="correct-${questionIndex}-${answerCount}">
                     Rétt svar: <input type="checkbox" id="correct-${questionIndex}-${answerCount}" name="questions[${questionIndex}][answers][${answerCount}][correct]" value="true">
                 </label>
-                <button type="button" class="removeAnswer">❌</button>
+                <button type="button" class="removeAnswer">Eyða</button>
             </div>
+      
         `;
 
         answersContainer.appendChild(answerDiv);
