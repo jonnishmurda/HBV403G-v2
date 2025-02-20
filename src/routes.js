@@ -17,27 +17,37 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/spurningar/:category', async (req, res) => {
-    const categoryName = req.params.category.toLowerCase();
+    let categoryName = req.params.category;
+
+    categoryName = categoryName.replace(/-/g, ' ');
 
     try {
         const db = getDatabase();
 
         const categoryResult = await db.query('SELECT id FROM categories WHERE LOWER(name) = LOWER($1)', [categoryName]);
-        if (categoryResult.rowCount === 0) {
+
+        if (!categoryResult || categoryResult.rowCount === 0) {
+            console.error(`❌ Category "${categoryName}" not found.`);
             return res.status(404).send("Category not found.");
         }
+
         const categoryId = categoryResult.rows[0].id;
 
         const questionsResult = await db.query('SELECT question, answers FROM questions WHERE category_id = $1', [categoryId]);
         const questions = questionsResult.rows;
 
+        if (!questions || questions.length === 0) {
+            console.warn(`⚠️ No questions found for category "${categoryName}"`);
+        }
+
         res.render('category', { title: categoryName, questions });
 
     } catch (error) {
-        console.error("Villa við að birta flokk:", error);
+        console.error("❌ Error loading category:", error);
         res.status(500).send("Villa við að birta flokk.");
     }
 });
+
 
 
 router.get('/form', (req, res) => {

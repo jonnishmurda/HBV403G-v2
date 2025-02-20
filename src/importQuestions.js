@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import fs from 'fs/promises';
 import path from 'path';
+import pg from 'pg'
 import { getDatabase } from './lib/db.client.js';
 
 const jsonFiles = ['html.json', 'css.json', 'js.json'];
@@ -8,7 +9,7 @@ const jsonFiles = ['html.json', 'css.json', 'js.json'];
 async function importQuestions() {
     const db = getDatabase();
     if (!db) {
-        console.error("❌ Database connection failed");
+        console.error("Database connection failed");
         process.exit(1);
     }
 
@@ -27,13 +28,12 @@ async function importQuestions() {
                 continue;
             } else {
                 categoryId = categoryResult.rows[0].id;
-                console.log(`✅ Using existing category: ${categoryName} (ID: ${categoryId})`);
+                console.log(`Using existing category: ${categoryName} (ID: ${categoryId})`);
             }
 
-            // ✅ Insert Questions
             for (const questionObj of jsonData.questions) {
                 if (!questionObj.question || !Array.isArray(questionObj.answers)) {
-                    console.warn('⚠️ Skipping invalid question:', questionObj);
+                    console.warn('Skipping invalid question:', questionObj);
                     continue;
                 }
 
@@ -41,13 +41,13 @@ async function importQuestions() {
                     'INSERT INTO questions (category_id, question, answers) VALUES ($1, $2, $3) RETURNING id',
                     [categoryId, questionObj.question, JSON.stringify(questionObj.answers)]
                 );
-                console.log(`✅ Inserted question: ${questionObj.question} (ID: ${insertQuestion.rows[0].id})`);
+                console.log(`Inserted question: ${questionObj.question} (ID: ${insertQuestion.rows[0].id})`);
             }
         }
 
         console.log("🎉 Import successful!");
     } catch (error) {
-        console.error("❌ Error importing data:", error);
+        console.error("Error importing data:", error);
     } finally {
         await db.end();
     }

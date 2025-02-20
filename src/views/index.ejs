@@ -6,7 +6,7 @@
     <% categories.forEach(category => { %>
       <div class="category">
         <h2>
-          <a href="/spurningar/<%= category.name.toLowerCase().replace(/\s+/g, '') %>">
+          <a href="/spurningar/<%= category.name.replace(/\s+/g, '-') %>">
             <%= category.name %>
           </a>
         </h2>
