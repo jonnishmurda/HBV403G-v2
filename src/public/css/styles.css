@@ -295,3 +295,12 @@ header {
     }
 
 }
+
+@media (max-width: 625px) {
+    header {
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+}
