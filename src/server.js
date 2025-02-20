@@ -7,6 +7,8 @@ import bodyParser from 'body-parser';
 
 const app = express();
 
+const port = process.env.PORT || 3000;
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -27,8 +29,7 @@ app.use((req, res) => {
 })
 
 const hostname = '127.0.0.1';
-const port = 3000;
 
-app.listen(port, hostname, () => {
+app.listen(port, () => {
   console.log(`Server running at http://${hostname}:${port}/`);
 });
